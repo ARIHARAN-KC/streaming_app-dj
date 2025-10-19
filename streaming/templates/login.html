@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="flex justify-center items-center min-h-screen">
+    <div class="w-full max-w-md bg-white dark:bg-gray-800 shadow-lg rounded-xl p-8 hover:shadow-xl transition-all">
+        <h2 class="text-center text-3xl font-bold text-primary-blue dark:text-white mb-6">Welcome Back</h2>
+
+        <form method="post" id="login-form" class="space-y-5">
+            {% csrf_token %}
+            
+            <div>
+                <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Username or Email</label>
+                <input type="text" id="username" name="username" required
+                    class="w-full px-4 py-3 border rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-blue focus:outline-none transition">
+                <p class="text-red-500 text-sm hidden" id="username-error">Please enter your username or email.</p>
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+                <input type="password" id="password" name="password" required
+                    class="w-full px-4 py-3 border rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-blue focus:outline-none transition">
+                <p class="text-red-500 text-sm hidden" id="password-error">Please enter your password.</p>
+            </div>
+
+            <button type="submit"
+                class="w-full py-3 bg-primary-blue text-white font-semibold rounded-lg hover:bg-secondary-blue transition duration-300">
+                Login
+            </button>
+
+            <p class="text-center mt-4 text-gray-600 dark:text-gray-300 text-sm">
+                Don't have an account? 
+                <a href="{% url 'signup' %}" class="text-secondary-blue font-medium hover:underline">Sign up here</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        let valid = true;
+        const username = document.getElementById('username');
+        const password = document.getElementById('password');
+        const usernameError = document.getElementById('username-error');
+        const passwordError = document.getElementById('password-error');
+
+        // Reset error messages
+        usernameError.classList.add('hidden');
+        passwordError.classList.add('hidden');
+
+        if (username.value.trim() === '') {
+            usernameError.classList.remove('hidden');
+            valid = false;
+        }
+        if (password.value.trim() === '') {
+            passwordError.classList.remove('hidden');
+            valid = false;
+        }
+
+        if (!valid) event.preventDefault();
+    });
+
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.classList.add('ring', 'ring-primary-blue');
+        });
+        input.addEventListener('blur', function() {
+            this.classList.remove('ring', 'ring-primary-blue');
+        });
+    });
+</script>
+{% endblock %}

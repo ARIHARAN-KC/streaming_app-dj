@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2 class="text-2xl font-semibold text-gray-800 mb-4">Search Results for "{{ query }}"</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for video in search_results %}
+    <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:-translate-y-1">
+        {% if video.video_id %}
+        <a href="{% url 'watch' video.video_id %}">
+            <img src="{{ video.thumbnail }}" alt="{{ video.title }}" class="w-full h-auto rounded-t-lg">
+        </a>
+        {% endif %}
+        <div class="p-4">
+            <h3 class="text-lg font-medium text-gray-800 mb-2">{{ video.title }}</h3>
+            <p class="text-sm text-gray-600">{{ video.description }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- If you intend to have a search form validation -->
+<form id="search-form" method="GET" class="hidden"> <!-- Add your actual form here -->
+    <input type="text" id="video-id" name="video_id">
+</form>
+
+<script>
+    // Validation Script for Video ID in Search Form
+    const searchForm = document.getElementById('search-form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(event) {
+            const videoId = document.querySelector('#video-id');
+            if (videoId && !/^[a-zA-Z0-9]+$/.test(videoId.value)) {
+                alert('Invalid video ID. Please use only alphanumeric characters.');
+                event.preventDefault(); // Prevent form submission
+            }
+        });
+    }
+</script>
+{% endblock %}

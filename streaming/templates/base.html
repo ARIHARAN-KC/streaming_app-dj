@@ -1,0 +1,146 @@
+    {% load static %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="{% static 'images/nova-ai-logo.svg' %}" type="image/x-icon">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Add custom Tailwind config for professional blue color scheme and enable dark mode -->
+        <script>
+            tailwind.config = {
+                darkMode: 'class', // Enable dark mode based on class
+                theme: {
+                    extend: {
+                        colors: {
+                            'primary-blue': '#1e40af',
+                            'secondary-blue': '#3b82f6',
+                            'muted-blue': '#bfdbfe',
+                            'neutral-gray': '#f3f4f6',
+                        },
+                        fontFamily: {
+                            'sans': ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+                        },
+                    }
+                }
+            }
+        </script>
+        <!-- Load Inter font for a clean, professional look -->
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    </head>
+    <body class="bg-neutral-gray dark:bg-gray-900 flex flex-col min-h-screen font-sans antialiased">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed top-0 left-0 z-50 w-64 h-full bg-white dark:bg-gray-800 shadow-2xl border-r border-muted-blue dark:border-gray-700 p-4 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-primary-blue dark:text-white uppercase tracking-tight">Orion AI</h2>
+                <!-- Mobile Close Button -->
+                <button id="closeSidebar" class="md:hidden text-primary-blue dark:text-white focus:outline-none hover:text-secondary-blue">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="space-y-2">
+                <a href="{% url 'home' %}" class="block text-base font-medium p-3 rounded-lg text-primary-blue dark:text-white hover:bg-muted-blue dark:hover:bg-gray-700 hover:text-secondary-blue transition-colors duration-200">Home</a>
+                <a href="{% url 'search_videos' %}" class="block text-base font-medium p-3 rounded-lg text-primary-blue dark:text-white hover:bg-muted-blue dark:hover:bg-gray-700 hover:text-secondary-blue transition-colors duration-200">Search</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' user.username %}" class="block text-base font-medium p-3 rounded-lg text-primary-blue dark:text-white hover:bg-muted-blue dark:hover:bg-gray-700 hover:text-secondary-blue transition-colors duration-200">Profile</a>
+                    <a href="{% url 'upload_video' %}" class="block text-base font-medium p-3 rounded-lg text-primary-blue dark:text-white hover:bg-muted-blue dark:hover:bg-gray-700 hover:text-secondary-blue transition-colors duration-200">Upload</a>
+                    <a href="{% url 'logout' %}" class="block text-base font-medium p-3 rounded-lg text-primary-blue dark:text-white hover:bg-muted-blue dark:hover:bg-gray-700 hover:text-secondary-blue transition-colors duration-200">Logout</a>
+                {% else %}
+                    <a href="{% url 'user_login' %}" class="block text-base font-medium p-3 rounded-lg text-primary-blue dark:text-white hover:bg-muted-blue dark:hover:bg-gray-700 hover:text-secondary-blue transition-colors duration-200">Login</a>
+                    <a href="{% url 'signup' %}" class="block text-base font-medium p-3 rounded-lg text-primary-blue dark:text-white hover:bg-muted-blue dark:hover:bg-gray-700 hover:text-secondary-blue transition-colors duration-200">Sign Up</a>
+                {% endif %}
+            </nav>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-grow md:ml-64 transition-all duration-300 ease-in-out">
+            <!-- Header -->
+            <header class="bg-white dark:bg-gray-800 border-b border-muted-blue dark:border-gray-700 shadow-md flex items-center justify-between px-4 py-3">
+                <!-- Mobile Menu Toggle Button -->
+                <button id="toggleSidebar" class="md:hidden text-primary-blue dark:text-white focus:outline-none hover:text-secondary-blue">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+                <!-- Search Bar -->
+                <div class="flex-grow max-w-md mx-auto">
+                    <form method="get" action="{% url 'search_videos' %}" class="flex shadow-sm">
+                        <input type="text" name="q" placeholder="Search videos..." class="flex-grow p-2 rounded-l-md text-gray-800 dark:text-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-secondary-blue border border-gray-300 dark:border-gray-600">
+                        <button type="submit" class="bg-primary-blue text-white p-2 rounded-r-md hover:bg-secondary-blue transition-colors duration-200">Search</button>
+                    </form>
+                </div>
+                <!-- Dark Mode Toggle Button -->
+                <button id="toggleDarkMode" class="text-primary-blue dark:text-white focus:outline-none hover:text-secondary-blue">
+                    <svg id="darkModeIcon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    <svg id="lightModeIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                </button>
+            </header>
+
+            <!-- Main Content -->
+            <main class="p-6 flex-grow bg-white dark:bg-gray-800 rounded-none shadow-none">
+                {% block content %}
+                {% endblock %}
+            </main>
+
+            <!-- Footer -->
+            <footer class="bg-white dark:bg-gray-800 border-t border-muted-blue dark:border-gray-700 text-center p-4 shadow-md">
+                <p class="text-sm text-primary-blue dark:text-white">© 2025 Orion AI(Kovyzen TECH) - All rights reserved.</p>
+            </footer>
+        </div>
+
+        <!-- JavaScript for Sidebar Toggle and Dark Mode Toggle -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const sidebar = document.getElementById('sidebar');
+                const toggleButton = document.getElementById('toggleSidebar');
+                const closeButton = document.getElementById('closeSidebar');
+                const toggleDarkModeButton = document.getElementById('toggleDarkMode');
+                const darkModeIcon = document.getElementById('darkModeIcon');
+                const lightModeIcon = document.getElementById('lightModeIcon');
+
+                // Open sidebar
+                toggleButton.addEventListener('click', () => {
+                    sidebar.classList.remove('-translate-x-full');
+                });
+
+                // Close sidebar
+                closeButton.addEventListener('click', () => {
+                    sidebar.classList.add('-translate-x-full');
+                });
+
+                // Close sidebar when clicking outside on mobile
+                document.addEventListener('click', (e) => {
+                    if (!sidebar.contains(e.target) && !toggleButton.contains(e.target) && !sidebar.classList.contains('-translate-x-full')) {
+                        sidebar.classList.add('-translate-x-full');
+                    }
+                });
+
+                // Toggle dark mode
+                toggleDarkModeButton.addEventListener('click', () => {
+                    const isDarkMode = document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('darkMode', isDarkMode);
+                    darkModeIcon.classList.toggle('hidden', isDarkMode);
+                    lightModeIcon.classList.toggle('hidden', !isDarkMode);
+                });
+
+                // Check for saved dark mode preference
+                const savedDarkMode = localStorage.getItem('darkMode');
+                if (savedDarkMode === 'true') {
+                    document.documentElement.classList.add('dark');
+                    darkModeIcon.classList.add('hidden');
+                    lightModeIcon.classList.remove('hidden');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    darkModeIcon.classList.remove('hidden');
+                    lightModeIcon.classList.add('hidden');
+                }
+            });
+        </script>
+    </body>
+    </html>

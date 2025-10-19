@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2 class="text-2xl font-bold text-primary-blue dark:text-white text-center my-6">Upload Video</h2>
+
+<form id="upload-video-form" method="POST" enctype="multipart/form-data" class="max-w-lg mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+    {% csrf_token %}
+    
+    <!-- Title Input -->
+    <div class="mb-4">
+        <label for="title" class="block text-sm font-medium text-primary-blue dark:text-white">Title:</label>
+        <input type="text" name="title" id="title" required
+               class="w-full mt-1 p-2 border border-muted-blue dark:border-gray-700 rounded-md focus:ring-secondary-blue focus:border-secondary-blue bg-white dark:bg-gray-900 text-primary-blue dark:text-white">
+    </div>
+
+    <!-- Description Textarea -->
+    <div class="mb-4">
+        <label for="description" class="block text-sm font-medium text-primary-blue dark:text-white">Description:</label>
+        <textarea name="description" id="description" required
+                  class="w-full mt-1 p-2 border border-muted-blue dark:border-gray-700 rounded-md focus:ring-secondary-blue focus:border-secondary-blue bg-white dark:bg-gray-900 text-primary-blue dark:text-white"></textarea>
+    </div>
+
+    <!-- Video File Input -->
+    <div class="mb-4">
+        <label for="video_file" class="block text-sm font-medium text-primary-blue dark:text-white">Video File:</label>
+        <input type="file" name="video_file" id="video_file" required
+               class="w-full mt-1 p-2 border border-muted-blue dark:border-gray-700 rounded-md focus:ring-secondary-blue focus:border-secondary-blue bg-white dark:bg-gray-900 text-primary-blue dark:text-white">
+        <div id="file-label" class="mt-2 text-sm text-gray-600 dark:text-gray-400"></div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit"
+            class="w-full bg-primary-blue text-white py-2 px-4 rounded-md hover:bg-secondary-blue transition-colors duration-200">
+        Upload Video
+    </button>
+</form>
+
+<script>
+    // File name preview script
+    document.addEventListener('DOMContentLoaded', () => {
+        const fileInput = document.getElementById('video_file');
+        const fileLabel = document.getElementById('file-label');
+        
+        fileInput.addEventListener('change', () => {
+            const fileName = fileInput.files[0] ? fileInput.files[0].name : 'No file chosen';
+            fileLabel.textContent = `Selected file: ${fileName}`;
+        });
+    });
+
+    // Video ID validation script (if applicable)
+    document.getElementById('upload-video-form').addEventListener('submit', function(event) {
+        const videoIdInput = document.querySelector('#video-id');
+        if (videoIdInput && !/^[a-zA-Z0-9]+$/.test(videoIdInput.value)) {
+            alert('Invalid video ID. Please use only alphanumeric characters.');
+            event.preventDefault(); // Prevent form submission
+        }
+    });
+</script>
+{% endblock %}

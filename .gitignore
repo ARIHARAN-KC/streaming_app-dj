@@ -1,0 +1,9 @@
+.env
+env
+media/
+db.sqlite3
+translator
+__pycache__/
+media_dubbed/
+migrations/
+api_key.json

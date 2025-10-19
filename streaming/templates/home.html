@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-12">
+    
+    <!-- Trending Videos Section -->
+    <h2 class="text-4xl font-bold text-primary-blue dark:text-white text-center mb-10 tracking-wide uppercase">Trending Videos</h2>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% if recommended_videos %}
+            {% for video in recommended_videos %}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 cursor-pointer">
+                <a href="{% url 'watch' video.video_id %}" class="block">
+                    <img src="{{ video.thumbnail }}" alt="{{ video.title }}" class="w-full h-52 object-cover rounded-t-lg">
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ video.title }}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">{{ video.description }}</p>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-gray-500 dark:text-gray-400 col-span-3">No recommended videos available.</p>
+        {% endif %}
+    </div>
+
+    <!-- Your Videos Section -->
+    <h2 class="text-4xl font-bold text-primary-blue dark:text-white text-center mt-16 mb-10 tracking-wide uppercase">Your Videos</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% if local_videos %}
+            {% for video in local_videos %}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105 cursor-pointer">
+                <a href="{% url 'watch' video.video_id %}" class="block">
+                    <video controls class="w-full h-52 object-cover rounded-t-lg">
+                        <source src="{{ video.video_file.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ video.title }}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">{{ video.description }}</p>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-gray-500 dark:text-gray-400 col-span-3">No local videos available.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+<style>
+    /* Smooth transition and limited description lines */
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+{% endblock %}

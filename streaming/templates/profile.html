@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Profile Header Section -->
+<section class="bg-neutral-gray dark:bg-gray-900 py-12">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-4xl font-bold text-primary-blue dark:text-white mb-4">{{ user.username }}'s Profile</h2>
+        <p class="text-lg text-gray-600 dark:text-gray-300">{{ user.bio }}</p>
+    </div>
+</section>
+
+<!-- Profile Info Section -->
+<div class="container mx-auto px-4 mb-12">
+    <div class="flex flex-col items-center bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all">
+        <!-- Profile Picture with Edit Button -->
+        <div class="relative mb-6">
+            <img src="{{ user.profile_picture_url }}" alt="Profile picture of {{ user.username }}" class="w-36 h-36 rounded-full border-4 border-secondary-blue shadow-md">
+            <!-- Edit Button -->
+            <button class="absolute bottom-0 right-0 bg-secondary-blue text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg transform translate-x-1/2 translate-y-1/2 hover:bg-primary-blue focus:outline-none" data-modal-toggle="editProfileModal" aria-label="Edit Profile">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- User Info -->
+        <h3 class="text-xl font-semibold text-primary-blue dark:text-white">{{ user.username }}</h3>
+        {% if request.user == user %}
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ user.email }}</p>
+        {% endif %}
+        <p class="text-gray-600 dark:text-gray-300">{{ user.bio }}</p>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div id="editProfileModal" class="fixed inset-0 flex justify-center items-center z-50 hidden bg-black bg-opacity-50" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+        <h3 id="modal-title" class="text-2xl font-semibold text-primary-blue dark:text-white mb-4">Edit Profile</h3>
+        <form method="POST" action="{% url 'update_profile' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="text-red-600 dark:text-red-400 mb-4">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <p>{{ field }}: {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <!-- Profile Picture Upload -->
+            <div class="mb-4">
+                <label for="profile_picture" class="block text-sm font-medium text-primary-blue dark:text-white">Profile Picture</label>
+                <input type="file" name="profile_picture" id="profile_picture" class="w-full mt-2 border border-muted-blue dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-900 text-primary-blue dark:text-white" accept="image/jpeg,image/png" onchange="validateFile(this)" required>
+                <p id="file-error" class="text-red-600 dark:text-red-400 hidden text-sm mt-1">File must be a JPEG/PNG under 2MB.</p>
+            </div>
+            <!-- Bio -->
+            <div class="mb-4">
+                <label for="bio" class="block text-sm font-medium text-primary-blue dark:text-white">Bio</label>
+                <textarea name="bio" id="bio" rows="4" class="w-full mt-2 border border-muted-blue dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-900 text-primary-blue dark:text-white" placeholder="Tell us about yourself">{{ user.bio }}</textarea>
+            </div>
+            <!-- Email -->
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-primary-blue dark:text-white">Email</label>
+                <input type="email" name="email" id="email" value="{{ user.email }}" class="w-full mt-2 border border-muted-blue dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-900 text-primary-blue dark:text-white" placeholder="Enter your email" required>
+            </div>
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-primary-blue text-white py-2 rounded-lg hover:bg-secondary-blue focus:outline-none transition-colors duration-200" id="submit-btn">
+                <span id="btn-text">Save Changes</span>
+                <span id="btn-loading" class="hidden">Saving...</span>
+            </button>
+        </form>
+        <!-- Close Modal Button -->
+        <button class="absolute top-2 right-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200" data-modal-toggle="editProfileModal" aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+</div>
+
+<!-- User Videos Section -->
+<div class="container mx-auto px-4">
+    <h3 class="text-3xl font-semibold text-primary-blue dark:text-white mb-6">Uploaded Videos ({{ user.videos.count }})</h3>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for video in user.videos.all %}
+        <div class="video-item bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform hover:-translate-y-1 hover:shadow-xl">
+            <a href="{% url 'watch' video.video_id %}">
+                <img src="{{ video.thumbnail }}" alt="Thumbnail for {{ video.title }} by {{ user.username }}" class="w-full h-48 object-cover rounded-t-lg border-b border-muted-blue dark:border-gray-700" loading="lazy">
+                <div class="p-4">
+                    <h4 class="text-lg font-bold text-primary-blue dark:text-white truncate">{{ video.title }}</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 truncate">{{ video.description }}</p>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <p class="text-center text-gray-500 dark:text-gray-400 col-span-full">No videos uploaded yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}
