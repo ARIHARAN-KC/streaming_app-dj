@@ -43,7 +43,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # For example, 5MB
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-dt8fl(kn2#g0_l9gep@t3d*qd(xeyl1v&gv0c9gbeo*+74#k-l'
+SECRET_KEY = 'your secrect key'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
