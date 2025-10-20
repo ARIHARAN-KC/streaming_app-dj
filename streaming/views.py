@@ -25,7 +25,7 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-YOUTUBE_API_KEY = 'AIzaSyD_IGZIrNLyo1iagBAQqs7a-maAkWsoz3k' #'apikey.json'
+YOUTUBE_API_KEY = 'your-api-key' #'apikey.json'
 
 def get_youtube_service():
     """ Initialize and return the YouTube API service """
